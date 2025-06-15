@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Calculadora Gauss y Gauss-Jordan</title>
+  <title>Calculadora Gauss-Jordan</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -17,22 +17,15 @@
 
     h1 {
       font-size: 2em;
-      margin-bottom: 20px;
-      letter-spacing: 1px;
+      margin-bottom: 10px;
       color: #fff;
     }
 
-    .modo {
-      margin-bottom: 20px;
-    }
-
-    select {
-      padding: 8px 16px;
-      border-radius: 5px;
-      border: none;
-      font-size: 1em;
-      background: #222;
-      color: #f0f0f0;
+    .info {
+      font-size: 0.9em;
+      margin-bottom: 30px;
+      text-align: center;
+      color: #ccc;
     }
 
     .container {
@@ -79,31 +72,52 @@
       white-space: pre-wrap;
       line-height: 1.5;
     }
+
+    table {
+      margin-top: 20px;
+      border-collapse: collapse;
+      background: #222;
+      color: #fff;
+      width: 300px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border: 1px solid #444;
+      padding: 12px;
+      text-align: center;
+    }
+
+    th {
+      background: #333;
+    }
   </style>
 </head>
 <body>
 
-  <h1>Calculadora Gauss y Gauss-Jordan</h1>
-
-  <div class="modo">
-    <label for="mode">Modo: </label>
-    <select id="mode">
-      <option value="gauss">Gauss</option>
-      <option value="jordan">Gauss-Jordan</option>
-    </select>
+  <h1>Calculadora Gauss-Jordan</h1>
+  <div class="info">
+    Universidad Estatal del Valle de Ecatepec<br>
+    Grupo: 2741<br>
+    Integrantes:<br>
+    Trinidad Lopez Alan Fernando<br>
+    Muñoz Valencia Yael<br>
+    Villanueva Sánchez Viridiana<br>
+    Gonzalez de la Cruz Edna Gisell
   </div>
 
   <div class="container" id="inputs">
     <!-- 3x4 = 12 inputs -->
-    <!-- JS los llenará -->
   </div>
 
   <button onclick="resolver()">Resolver</button>
 
-  <div class="resultado" id="resultado">Introduce los datos y selecciona el modo.</div>
+  <div class="resultado" id="resultado">Introduce los datos y haz clic en Resolver.</div>
+
+  <div id="tablaResultados"></div>
 
   <script>
-    // Crear inputs
     var cont = document.getElementById("inputs");
     for (var i = 0; i < 3; i++) {
       for (var j = 0; j < 4; j++) {
@@ -130,31 +144,8 @@
 
     function resolver() {
       var m = obtenerMatriz();
-      var modo = document.getElementById("mode").value;
-      var res = (modo === "gauss") ? gauss(m) : gaussJordan(m);
-      document.getElementById("resultado").innerText = res.join("\n");
-    }
-
-    function gauss(m) {
       var pasos = [];
-      for (var i = 0; i < 3; i++) {
-        var pivote = m[i][i];
-        for (var j = i; j < 4; j++) m[i][j] /= pivote;
-        pasos.push("F" + (i+1) + " ÷ " + pivote + " → " + m[i].map(n => n.toFixed(2)));
 
-        for (var k = i + 1; k < 3; k++) {
-          var factor = m[k][i];
-          for (var j = i; j < 4; j++) m[k][j] -= factor * m[i][j];
-          pasos.push("F" + (k+1) + " - " + factor.toFixed(2) + " × F" + (i+1) + " → " + m[k].map(n => n.toFixed(2)));
-        }
-      }
-      pasos.push("\nResultado en forma escalonada:");
-      for (var i = 0; i < 3; i++) pasos.push("Fila " + (i+1) + ": " + m[i].map(n => n.toFixed(2)).join("  "));
-      return pasos;
-    }
-
-    function gaussJordan(m) {
-      var pasos = [];
       for (var i = 0; i < 3; i++) {
         var pivote = m[i][i];
         for (var j = 0; j < 4; j++) m[i][j] /= pivote;
@@ -168,11 +159,17 @@
           }
         }
       }
-      pasos.push("\nSoluciones finales:");
-      pasos.push("x = " + m[0][3].toFixed(2));
-      pasos.push("y = " + m[1][3].toFixed(2));
-      pasos.push("z = " + m[2][3].toFixed(2));
-      return pasos;
+
+      document.getElementById("resultado").innerText = pasos.join("\n");
+
+      // Mostrar tabla con resultado final
+      var tablaHTML = "<table><tr><th>Variable</th><th>Valor</th></tr>";
+      tablaHTML += "<tr><td>x</td><td>" + m[0][3].toFixed(2) + "</td></tr>";
+      tablaHTML += "<tr><td>y</td><td>" + m[1][3].toFixed(2) + "</td></tr>";
+      tablaHTML += "<tr><td>z</td><td>" + m[2][3].toFixed(2) + "</td></tr>";
+      tablaHTML += "</table>";
+
+      document.getElementById("tablaResultados").innerHTML = tablaHTML;
     }
   </script>
 
