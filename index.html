@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>🔥 Calculadora Gauss y Gauss-Jordan</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      text-shadow: 1px 1px 3px #000;
+      margin-bottom: 20px;
+    }
+
+    .matrix-input {
+      display: grid;
+      grid-template-columns: repeat(4, 60px);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input[type="number"] {
+      width: 60px;
+      padding: 10px;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    button {
+      background: #ff6f61;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1em;
+      color: #fff;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #ff3b2e;
+    }
+
+    .output {
+      margin-top: 30px;
+      background: #2c2c54;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 600px;
+      width: 100%;
+      white-space: pre-wrap;
+      font-family: monospace;
+    }
+
+    .mode {
+      margin-bottom: 20px;
+    }
+
+    select {
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1em;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🧠 Gauss y Gauss-Jordan</h1>
+
+  <div class="mode">
+    <label>Modo: </label>
+    <select id="mode">
+      <option value="gauss">Gauss</option>
+      <option value="jordan">Gauss-Jordan</option>
+    </select>
+  </div>
+
+  <div class="matrix-input" id="matrix">
+    <!-- 3x4 matriz aumentada -->
+    <!-- fila 1 -->
+    <input type="number" id="m00" value="1">
+    <input type="number" id="m01" value="2">
+    <input type="number" id="m02" value="-1">
+    <input type="number" id="m03" value="8">
+    <!-- fila 2 -->
+    <input type="number" id="m10" value="2">
+    <input type="number" id="m11" value="3">
+    <input type="number" id="m12" value="1">
+    <input type="number" id="m13" value="13">
+    <!-- fila 3 -->
+    <input type="number" id="m20" value="1">
+    <input type="number" id="m21" value="-1">
+    <input type="number" id="m22" value="2">
+    <input type="number" id="m23" value="3">
+  </div>
+
+  <button onclick="resolver()">¡Resolver!</button>
+
+  <div class="output" id="resultado">Resultado aquí...</div>
+
+  <script>
+    function resolver() {
+      var matriz = [];
+      for (var i = 0; i < 3; i++) {
+        var fila = [];
+        for (var j = 0; j < 4; j++) {
+          var val = parseFloat(document.getElementById('m' + i + j).value);
+          fila.push(val);
+        }
+        matriz.push(fila);
+      }
+
+      var modo = document.getElementById('mode').value;
+      var resultado = (modo === "gauss") ? gauss(matriz) : gaussJordan(matriz);
+      document.getElementById('resultado').innerText = resultado.join('\n');
+    }
+
+    function gauss(m) {
+      var pasos = [];
+
+      for (var i = 0; i < 3; i++) {
+        var pivote = m[i][i];
+        for (var j = i; j < 4; j++) m[i][j] /= pivote;
+        pasos.push("F" + (i+1) + " ÷ " + pivote + " → " + JSON.stringify(m[i]));
+
+        for (var k = i + 1; k < 3; k++) {
+          var factor = m[k][i];
+          for (var j = i; j < 4; j++) m[k][j] -= factor * m[i][j];
+          pasos.push("F" + (k+1) + " - " + factor.toFixed(2) + "×F" + (i+1) + " → " + JSON.stringify(m[k]));
+        }
+      }
+
+      pasos.push("\n--- Resultado (forma escalonada) ---");
+      pasos.push(JSON.stringify(m[0]));
+      pasos.push(JSON.stringify(m[1]));
+      pasos.push(JSON.stringify(m[2]));
+      return pasos;
+    }
+
+    function gaussJordan(m) {
+      var pasos = [];
+
+      for (var i = 0; i < 3; i++) {
+        var pivote = m[i][i];
+        for (var j = 0; j < 4; j++) m[i][j] /= pivote;
+        pasos.push("F" + (i+1) + " ÷ " + pivote + " → " + JSON.stringify(m[i]));
+
+        for (var k = 0; k < 3; k++) {
+          if (k !== i) {
+            var factor = m[k][i];
+            for (var j = 0; j < 4; j++) m[k][j] -= factor * m[i][j];
+            pasos.push("F" + (k+1) + " - " + factor.toFixed(2) + "×F" + (i+1) + " → " + JSON.stringify(m[k]));
+          }
+        }
+      }
+
+      pasos.push("\n--- Resultado (forma reducida) ---");
+      pasos.push("x = " + m[0][3].toFixed(2));
+      pasos.push("y = " + m[1][3].toFixed(2));
+      pasos.push("z = " + m[2][3].toFixed(2));
+      return pasos;
+    }
+  </script>
+
+</body>
+</html>
