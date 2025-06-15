@@ -2,173 +2,173 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>🔥 Calculadora Gauss & Gauss-Jordan</title>
+  <title>Calculadora Gauss y Gauss-Jordan</title>
   <style>
     body {
-      font-family: 'Courier New', monospace;
-      background: linear-gradient(135deg, #1f1c2c, #928dab);
-      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      background: #111;
+      color: #f0f0f0;
+      margin: 0;
+      padding: 40px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 40px;
-      margin: 0;
     }
 
     h1 {
-      font-size: 2.5em;
-      text-shadow: 1px 1px 3px #000;
+      font-size: 2em;
       margin-bottom: 20px;
+      letter-spacing: 1px;
+      color: #fff;
     }
 
-    .mode {
+    .modo {
       margin-bottom: 20px;
     }
 
     select {
-      padding: 10px;
-      border-radius: 8px;
+      padding: 8px 16px;
+      border-radius: 5px;
       border: none;
       font-size: 1em;
+      background: #222;
+      color: #f0f0f0;
     }
 
-    table {
-      border-collapse: collapse;
+    .container {
+      display: grid;
+      grid-template-columns: repeat(4, 80px);
+      gap: 10px;
       margin-bottom: 20px;
     }
 
-    td {
-      border: 1px solid #fff;
-      width: 60px;
-      height: 40px;
+    input {
+      width: 100%;
+      padding: 10px;
       text-align: center;
-      background-color: rgba(255,255,255,0.1);
-    }
-
-    td:focus {
-      outline: none;
-      background-color: rgba(255,255,255,0.3);
-    }
-
-    td[contenteditable="true"] {
-      cursor: text;
+      font-size: 1em;
+      background: #1e1e1e;
+      border: 1px solid #444;
+      border-radius: 5px;
+      color: #fff;
     }
 
     button {
-      background: #ff6f61;
+      padding: 10px 30px;
+      background: #007acc;
+      color: white;
       border: none;
-      padding: 12px 24px;
+      border-radius: 6px;
       font-size: 1em;
-      color: #fff;
-      border-radius: 10px;
       cursor: pointer;
-      transition: background 0.3s;
+      margin-top: 10px;
     }
 
     button:hover {
-      background: #ff3b2e;
+      background: #005fa3;
     }
 
-    .output {
-      margin-top: 30px;
-      background: #2c2c54;
+    .resultado {
+      background: #1c1c1c;
       padding: 20px;
-      border-radius: 12px;
+      border-radius: 10px;
+      margin-top: 30px;
       max-width: 600px;
       width: 100%;
-      white-space: pre-wrap;
       font-family: monospace;
+      white-space: pre-wrap;
+      line-height: 1.5;
     }
   </style>
 </head>
 <body>
 
-  <h1>📊 Gauss & Gauss-Jordan</h1>
+  <h1>Calculadora Gauss y Gauss-Jordan</h1>
 
-  <div class="mode">
-    <label>Modo: </label>
+  <div class="modo">
+    <label for="mode">Modo: </label>
     <select id="mode">
       <option value="gauss">Gauss</option>
       <option value="jordan">Gauss-Jordan</option>
     </select>
   </div>
 
-  <table id="matrix">
-    <tbody>
-      <!-- 3 filas, 4 columnas -->
-      <tr><td contenteditable="true">1</td><td contenteditable="true">2</td><td contenteditable="true">-1</td><td contenteditable="true">8</td></tr>
-      <tr><td contenteditable="true">2</td><td contenteditable="true">3</td><td contenteditable="true">1</td><td contenteditable="true">13</td></tr>
-      <tr><td contenteditable="true">1</td><td contenteditable="true">-1</td><td contenteditable="true">2</td><td contenteditable="true">3</td></tr>
-    </tbody>
-  </table>
+  <div class="container" id="inputs">
+    <!-- 3x4 = 12 inputs -->
+    <!-- JS los llenará -->
+  </div>
 
-  <button onclick="resolver()">¡Resolver!</button>
+  <button onclick="resolver()">Resolver</button>
 
-  <div class="output" id="resultado">Resultado aquí...</div>
+  <div class="resultado" id="resultado">Introduce los datos y selecciona el modo.</div>
 
   <script>
+    // Crear inputs
+    var cont = document.getElementById("inputs");
+    for (var i = 0; i < 3; i++) {
+      for (var j = 0; j < 4; j++) {
+        var input = document.createElement("input");
+        input.type = "number";
+        input.id = "m" + i + j;
+        input.value = "0";
+        cont.appendChild(input);
+      }
+    }
+
     function obtenerMatriz() {
-      var matriz = [];
-      var filas = document.querySelectorAll("#matrix tr");
-      for (var i = 0; i < filas.length; i++) {
-        var celdas = filas[i].querySelectorAll("td");
+      var m = [];
+      for (var i = 0; i < 3; i++) {
         var fila = [];
-        for (var j = 0; j < celdas.length; j++) {
-          var val = parseFloat(celdas[j].innerText);
+        for (var j = 0; j < 4; j++) {
+          var val = parseFloat(document.getElementById("m" + i + j).value);
           fila.push(isNaN(val) ? 0 : val);
         }
-        matriz.push(fila);
+        m.push(fila);
       }
-      return matriz;
+      return m;
     }
 
     function resolver() {
-      var matriz = obtenerMatriz();
+      var m = obtenerMatriz();
       var modo = document.getElementById("mode").value;
-      var resultado = (modo === "gauss") ? gauss(matriz) : gaussJordan(matriz);
-      document.getElementById("resultado").innerText = resultado.join('\n');
+      var res = (modo === "gauss") ? gauss(m) : gaussJordan(m);
+      document.getElementById("resultado").innerText = res.join("\n");
     }
 
     function gauss(m) {
       var pasos = [];
-
       for (var i = 0; i < 3; i++) {
         var pivote = m[i][i];
         for (var j = i; j < 4; j++) m[i][j] /= pivote;
-        pasos.push("F" + (i+1) + " ÷ " + pivote + " → " + JSON.stringify(m[i]));
+        pasos.push("F" + (i+1) + " ÷ " + pivote + " → " + m[i].map(n => n.toFixed(2)));
 
         for (var k = i + 1; k < 3; k++) {
           var factor = m[k][i];
           for (var j = i; j < 4; j++) m[k][j] -= factor * m[i][j];
-          pasos.push("F" + (k+1) + " - " + factor.toFixed(2) + "×F" + (i+1) + " → " + JSON.stringify(m[k]));
+          pasos.push("F" + (k+1) + " - " + factor.toFixed(2) + " × F" + (i+1) + " → " + m[k].map(n => n.toFixed(2)));
         }
       }
-
-      pasos.push("\n--- Resultado (forma escalonada) ---");
-      pasos.push(JSON.stringify(m[0]));
-      pasos.push(JSON.stringify(m[1]));
-      pasos.push(JSON.stringify(m[2]));
+      pasos.push("\nResultado en forma escalonada:");
+      for (var i = 0; i < 3; i++) pasos.push("Fila " + (i+1) + ": " + m[i].map(n => n.toFixed(2)).join("  "));
       return pasos;
     }
 
     function gaussJordan(m) {
       var pasos = [];
-
       for (var i = 0; i < 3; i++) {
         var pivote = m[i][i];
         for (var j = 0; j < 4; j++) m[i][j] /= pivote;
-        pasos.push("F" + (i+1) + " ÷ " + pivote + " → " + JSON.stringify(m[i]));
+        pasos.push("F" + (i+1) + " ÷ " + pivote + " → " + m[i].map(n => n.toFixed(2)));
 
         for (var k = 0; k < 3; k++) {
           if (k !== i) {
             var factor = m[k][i];
             for (var j = 0; j < 4; j++) m[k][j] -= factor * m[i][j];
-            pasos.push("F" + (k+1) + " - " + factor.toFixed(2) + "×F" + (i+1) + " → " + JSON.stringify(m[k]));
+            pasos.push("F" + (k+1) + " - " + factor.toFixed(2) + " × F" + (i+1) + " → " + m[k].map(n => n.toFixed(2)));
           }
         }
       }
-
-      pasos.push("\n--- Resultado (forma reducida) ---");
+      pasos.push("\nSoluciones finales:");
       pasos.push("x = " + m[0][3].toFixed(2));
       pasos.push("y = " + m[1][3].toFixed(2));
       pasos.push("z = " + m[2][3].toFixed(2));
