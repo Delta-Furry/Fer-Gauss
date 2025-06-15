@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>🔥 Calculadora Gauss y Gauss-Jordan</title>
+  <title>🔥 Calculadora Gauss & Gauss-Jordan</title>
   <style>
     body {
       font-family: 'Courier New', monospace;
@@ -21,20 +21,37 @@
       margin-bottom: 20px;
     }
 
-    .matrix-input {
-      display: grid;
-      grid-template-columns: repeat(4, 60px);
-      gap: 10px;
+    .mode {
       margin-bottom: 20px;
     }
 
-    input[type="number"] {
-      width: 60px;
+    select {
       padding: 10px;
-      font-size: 1em;
-      border: none;
       border-radius: 8px;
+      border: none;
+      font-size: 1em;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    td {
+      border: 1px solid #fff;
+      width: 60px;
+      height: 40px;
       text-align: center;
+      background-color: rgba(255,255,255,0.1);
+    }
+
+    td:focus {
+      outline: none;
+      background-color: rgba(255,255,255,0.3);
+    }
+
+    td[contenteditable="true"] {
+      cursor: text;
     }
 
     button {
@@ -62,22 +79,11 @@
       white-space: pre-wrap;
       font-family: monospace;
     }
-
-    .mode {
-      margin-bottom: 20px;
-    }
-
-    select {
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      font-size: 1em;
-    }
   </style>
 </head>
 <body>
 
-  <h1>🧠 Gauss y Gauss-Jordan</h1>
+  <h1>📊 Gauss & Gauss-Jordan</h1>
 
   <div class="mode">
     <label>Modo: </label>
@@ -87,44 +93,40 @@
     </select>
   </div>
 
-  <div class="matrix-input" id="matrix">
-    <!-- 3x4 matriz aumentada -->
-    <!-- fila 1 -->
-    <input type="number" id="m00" value="1">
-    <input type="number" id="m01" value="2">
-    <input type="number" id="m02" value="-1">
-    <input type="number" id="m03" value="8">
-    <!-- fila 2 -->
-    <input type="number" id="m10" value="2">
-    <input type="number" id="m11" value="3">
-    <input type="number" id="m12" value="1">
-    <input type="number" id="m13" value="13">
-    <!-- fila 3 -->
-    <input type="number" id="m20" value="1">
-    <input type="number" id="m21" value="-1">
-    <input type="number" id="m22" value="2">
-    <input type="number" id="m23" value="3">
-  </div>
+  <table id="matrix">
+    <tbody>
+      <!-- 3 filas, 4 columnas -->
+      <tr><td contenteditable="true">1</td><td contenteditable="true">2</td><td contenteditable="true">-1</td><td contenteditable="true">8</td></tr>
+      <tr><td contenteditable="true">2</td><td contenteditable="true">3</td><td contenteditable="true">1</td><td contenteditable="true">13</td></tr>
+      <tr><td contenteditable="true">1</td><td contenteditable="true">-1</td><td contenteditable="true">2</td><td contenteditable="true">3</td></tr>
+    </tbody>
+  </table>
 
   <button onclick="resolver()">¡Resolver!</button>
 
   <div class="output" id="resultado">Resultado aquí...</div>
 
   <script>
-    function resolver() {
+    function obtenerMatriz() {
       var matriz = [];
-      for (var i = 0; i < 3; i++) {
+      var filas = document.querySelectorAll("#matrix tr");
+      for (var i = 0; i < filas.length; i++) {
+        var celdas = filas[i].querySelectorAll("td");
         var fila = [];
-        for (var j = 0; j < 4; j++) {
-          var val = parseFloat(document.getElementById('m' + i + j).value);
-          fila.push(val);
+        for (var j = 0; j < celdas.length; j++) {
+          var val = parseFloat(celdas[j].innerText);
+          fila.push(isNaN(val) ? 0 : val);
         }
         matriz.push(fila);
       }
+      return matriz;
+    }
 
-      var modo = document.getElementById('mode').value;
+    function resolver() {
+      var matriz = obtenerMatriz();
+      var modo = document.getElementById("mode").value;
       var resultado = (modo === "gauss") ? gauss(matriz) : gaussJordan(matriz);
-      document.getElementById('resultado').innerText = resultado.join('\n');
+      document.getElementById("resultado").innerText = resultado.join('\n');
     }
 
     function gauss(m) {
